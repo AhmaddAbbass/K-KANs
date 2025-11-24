@@ -56,6 +56,16 @@ def centered_alignment(K, T):
 
     return num / (denom1 * denom2 + 1e-12)
 
+def compute_centered_alignment(kernel_model, X, y):
+    """
+    Centered + normalized alignment used for TRAINING.
+    """
+    K = kernel_model(X)        # (n, n)
+    y = y.view(-1, 1)
+    T = y @ y.t()              # label Gram
+    A_c = centered_alignment(K, T)
+    return A_c, K
+
 def compute_centered_alignment_loss(kernel_model, X, y):
     K = kernel_model(X)
     y = y.view(-1,1)
