@@ -55,3 +55,10 @@ def centered_alignment(K, T):
     denom2 = torch.sqrt((Tc * Tc).sum() + 1e-12)
 
     return num / (denom1 * denom2 + 1e-12)
+
+def compute_centered_alignment_loss(kernel_model, X, y):
+    K = kernel_model(X)
+    y = y.view(-1,1)
+    T = y @ y.t()
+    return -centered_alignment(K, T)
+
