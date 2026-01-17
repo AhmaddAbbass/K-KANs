@@ -6,6 +6,9 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{geometry}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, shadows}
+\usetikzlibrary{positioning}
 \geometry{a4paper, margin=1in}
 
 
@@ -82,5 +85,285 @@ This is my proposed task division (waiting for your feedback), and we can meet o
 Mayssa will focus on the interpretability aspect (point 3 mentioned in Section 3 of Ahmad's email).  
 Ahmad will continue working on the classification setup (point 2 mentioned in Section 3 of Ahmad's email).  
 I will handle point 1 from Section 3 of Ahmad's email, incorporating it into the Gaussian process setup discussed earlier in Section~\ref{sec:approach}.
+\newpage 
 
+\[
+p_{Y|X}(\mathbf{y}| \mathbf{x}) = \frac{1}{(2\pi)^{n/2} |\Sigma|^{1/2}} \exp\left(-\frac{1}{2}(\mathbf{y} - \boldsymbol{\mu})^T \Sigma^{-1} (\mathbf{y} - \boldsymbol{\mu})\right) , \quad \mathbf{y} \in \mathbb{R}^n
+\]
+The univariate guassian normal in y is given by, using first the sim: 
+\newpage
+$y \sim \mathcal{N}(\mu, \sigma^2), \quad p_{Y}(y) = \frac{1}{\sqrt{2\pi \sigma^2}} \exp\left(-\frac{(y - \mu)^2}{2\sigma^2}\right) , \quad y \in \mathbb{R}$
+\newpage
+Now for the multivariate case: \newpage
+$\mathbf{y} \sim \mathcal{N}(\boldsymbol{\mu}, \Sigma) ,  \quad \mathbf{y} \in \mathbb{R}^n$
+
+\newpage
+Liken in any machine learning we have the setyp of a set of data points: 
+\newpage
+dfsdhf\\
+$D = \{(\mathbf{x}_i, y_i)\}_{i=1}^n \quad \mathbf{x}_i \in \mathbb{R}^p , \quad y_i \in \mathbb{R}$\\
+$y = f(\mathbf{x}) + \epsilon, \quad \epsilon \sim \mathcal{N}(0, \sigma^2)$\\
+
+\newpage
+sdfsdfd\\\\
+$\mathbf{f}|\mathbf{X} \sim \mathcal{N}(\textbf{0}, \mathcal{K}_{\mathbf{X}\mathbf{X}}) \implies  \mathbf{Y}|\mathbf{X} \sim \mathcal{N}(\mathbf{0},   \mathcal{K}_{\mathbf{X}\mathbf{X}} +\sigma^2\mathbf{I}) $ \newpage
+Fix a Kernel(e.g. RBF):  $ K(\mathbf{x}_i, \mathbf{x}_j) = \exp\left(-\frac{||\mathbf{x}_i - \mathbf{x}_j||^2}{2\rho^2}\right) \quad \forall i,j$ \newpage
+$O(n^3)$ \newpage
+
+$\max\limits_{K_{\mathbf{x}\mathbf{x}}} \ \  p(\textbf{y}|\mathbf{x}; K_{\mathbf{x}\mathbf{x}})$ 
+\newpage
+
+$ \hat{K} \quad \hat{K}(\mathbf{x}_i, \mathbf{x}_j) \quad \forall i,j \quad $
+\newpage
+$p(\textbf{y}|\mathbf{x}; \hat{K})$
+\newpage 
+$\mathbf{x_*} \in \mathbb{R}^p$ \newpage 
+$K^{true}$ \newpage 
+$K^{obs}= K^{true} + \mathcal{E}, \quad \mathcal{E} \sim \mathcal{N}(\textbf{0}, \sigma^2\textbf{I})$ \newpage
+$ \text{Frobenius: }\min\limits_{K} \ \  ||K^{obs} - K||_F^2 , \quad \text{MSE: } \min\limits_{K} \ \  \frac{1}{n^2}||K^{obs} - K||^2 $ 
+\newpage
+$D = \{\mathbf{x}_i\}_{i=1}^n \quad \mathbf{x}_i \in \mathbb{R}^p$ 
+\newpage 
+\begin{tikzpicture}[
+    node distance=1.8cm,
+    every node/.style={font=\small},
+    box/.style={draw, rectangle, minimum width=2.7cm, minimum height=1.2cm, align=center}
+]
+
+% Pair (i,j)
+\node[box] (pair) {All pairs\\$(\mathbf{x}_i,\mathbf{x}_j)$};
+
+% Network
+\node[box, right=3cm of pair] (net) {Our Network};
+
+% Single K_ij output
+\node[box, right=2.6cm of net, minimum width=1.7cm] (Kij) {$\hat{K}_{ij}$};
+
+% Matrix assembly
+\node[box, below=1.5cm of Kij] (matrix) {$\hat{K}\in\mathbb{R}^{n\times n}$};
+
+% Loss
+\node[box, left=3cm of matrix] (loss) {$\ell\!\left(K^{\text{true}},\,\hat{K}\right)$};
+
+% Backprop block (boxed)
+\node[box, below=1.2cm of loss, minimum width=2.3cm] (bpbox) {Backpropagation};
+
+% Arrow label (not boxed)
+% \node[below=0.4cm of loss] (bplabel) {backpropagate};
+
+% Arrows forward
+\draw[->] (pair) -- node[midway,above]{$ \forall \ (i,j)$} (net);
+\draw[->] (net) -- (Kij);
+\draw[->] (Kij) -- node[right]{fill matrix} (matrix);
+\draw[->] (matrix) -- (loss);
+
+% Backprop arrow
+\draw[->] (loss) -- (bpbox);
+
+\end{tikzpicture}
+\newpage
+\(K^{\text{true}}(\mathbf{x}_i,\mathbf{x}_j)
+= K^{\text{true}}(\mathbf{x}_i^{(0:m)},\,\mathbf{x}_j^{(0:m)}) ,\quad m<p \quad \quad \text{where we are given } \mathbf{x} \in \mathbb{R}^p\)
+
+
+
+
+\newpage 
+
+\begin{tikzpicture}[
+    % Define standard styles for the diagram components
+    node distance=2.5cm,
+    inputnode/.style={
+        rectangle,
+        draw=blue!60!black,
+        fill=blue!5,
+        very thick,
+        minimum width=2.5cm,
+        minimum height=1.2cm,
+        align=center,
+        rounded corners=3pt,
+        font=\sffamily\bfseries
+    },
+    processnode/.style={
+        rectangle,
+        draw=orange!60!black,
+        fill=orange!10,
+        line width=2pt,
+        minimum width=4cm,
+        minimum height=2cm,
+        align=center,
+        rounded corners=5pt,
+        drop shadow,
+        font=\sffamily\LARGE\bfseries
+    },
+    outputnode/.style={
+        rectangle,
+        draw=green!60!black,
+        fill=green!5,
+        very thick,
+        minimum width=3cm,
+        minimum height=1.5cm,
+        align=center,
+        rounded corners=3pt,
+        font=\sffamily\bfseries
+    },
+    arrow/.style={
+        -{Latex[length=4mm, width=3mm]},
+        line width=1.5pt,
+        draw=gray!60!black
+    }
+]
+
+% --- Nodes ---
+
+% Central Process (The Package)
+\node[processnode] (package) {Our Network};
+
+% Inputs (positioned relative to the center)
+\node[inputnode, left=of package, yshift=1.5cm] (data) {Input Data};
+\node[inputnode, left=of package, yshift=-1.5cm] (obj) {Objective};
+
+% Output
+\node[outputnode, right=of package] (kernel) {Best Kernel};
+
+% --- Connections ---
+% Drawing arrows with flowing paths
+\draw[arrow] (data.east) -- + (1,0) |- (package.170);
+\draw[arrow] (obj.east)  -- + (1,0) |- (package.190);
+\draw[arrow] (package.east) -- (kernel.west);
+
+% Optional: Add a "Ready to Use" label above
+\node[above=0.5cm of package, font=\sffamily\itshape\color{gray}] {Automated Selection Engine};
+
+\end{tikzpicture}
+
+\newpage 
+\[
+f \sim \mathcal{GP}\!\left(0,\, k(\cdot,\cdot)\right),
+\]
+\[
+\mathbf{f} = (f(\mathbf{x}_1),\ldots,f(\mathbf{x}_n))^T 
+\sim \mathcal{N}\!\left(\mathbf{0},\, K_{\mathbf{X}\mathbf{X}}\right).
+\]
+\newpage 
+$\max\limits_{k_{\theta}} \ \  \log \ p(\textbf{y}|\mathbf{x}; K_{\mathbf{x}\mathbf{x}})$
+\newpage
+\begin{tikzpicture}[
+    every node/.style={font=\small},
+    dot/.style={circle,fill=black,inner sep=2.2pt},
+    sq/.style={draw,rectangle,minimum size=8pt}
+]
+
+% Top
+\node[dot] (xy) {};
+
+% Middle column
+\node[sq, below=0.8cm of xy] (sq1) {};
+\node[sq, below=0.9cm of sq1] (sq2) {};
+\node[dot, below=0.9cm of sq2] (mid) {};
+
+% Left branch from mid
+\node[sq, below left=1.0cm and 1.0cm of mid] (L1) {};
+\node[sq, right=0.9cm of L1] (L2) {};
+\node[dot, below=0.8cm of L1] (x) {};
+\node[dot, below=0.8cm of L2] (x2) {}; % small neighbor dot
+
+% Right branch from mid
+\node[sq, below right=1.0cm and 1.0cm of mid] (R1) {};
+\node[sq, left=0.9cm of R1] (R2) {};
+\node[dot, below=0.8cm of R1] (y) {};
+\node[dot, below=0.8cm of R2] (y2) {}; % small neighbor dot
+
+% Extra isolated dots (left side)
+\node[dot, left=1.3cm of mid] (is1) {};
+\node[dot, left=0.8cm of is1] (is2) {};
+
+% Connections (vertical)
+\draw (xy) -- (sq1) -- (sq2) -- (mid);
+
+% Left Branch connections
+\draw (mid) -- (L1) -- (x);
+\draw (mid) -- (L2) -- (x2);
+
+% Right Branch connections
+\draw (mid) -- (R1) -- (y);
+\draw (mid) -- (R2) -- (y2);
+
+% Top diagonal branches
+\draw (xy) -- (R1);
+\draw (xy) -- (L2);
+
+% Labels
+\node[below=2pt] at (x) {$x$};
+\node[below=2pt] at (y) {$y$};
+\node[above=2pt] at (xy) {$xy$};
+
+\end{tikzpicture}
+\newpage
+\begin{tikzpicture}[
+    dot/.style={circle, fill=black, inner sep=1.5pt},
+    gate/.style={rectangle, draw, minimum size=6mm},
+    >=stealth
+]
+
+% Define the nodes
+% Input nodes
+\node[dot, label=below:$x$] (x) at (0, 0) {};
+\node[dot, label=below:$y$] (y) at (5, 0) {};
+
+% Intermediate layer 1 (Gates)
+\node[gate] (gate1) at (0, 2) {$\setminus$}; % Simulating the left-leaning curve
+\node[gate] (gate2) at (1.5, 2) {$\cup$}; % Simulating the upward-facing curve
+\node[gate] (gate3) at (3.5, 2) {$\setminus$}; % Simulating the left-leaning curve
+\node[gate] (gate4) at (5, 2) {$\cup$}; % Simulating the upward-facing curve
+
+% Intermediate layer 2 (Dots/Junctions)
+\node[dot] (mid1) at (1.5, 4) {};
+\node[dot] (mid2) at (3.5, 4) {};
+
+% Mid-level nodes (for spacing and the ellipses in the original image)
+\node[dot] at (-1.5, 4) {};
+\node[dot] at (-0.5, 4) {};
+\node at (0.5, 4) {$\dots$}; % For the missing dots/lines on the left
+\node at (2.5, 4) {$\dots$}; % For the missing dots/lines in the middle
+
+% Intermediate layer 3 (Gates)
+\node[gate] (gate5) at (1.5, 6) {$\cup$}; % Simulating the upward-facing curve
+\node[gate] (gate6) at (3.5, 6) {$\setminus$}; % Simulating the left-leaning curve
+
+% Output node
+\node[dot, label=above:$xy$] (xy) at (2.5, 8) {};
+
+% --- Draw the connections (Lines) ---
+
+% From x and y to Gate Layer 1
+\draw (x) -- (gate1);
+\draw (x) -- (gate2); % Connecting x to gate2
+\draw (y) -- (gate3); % Connecting y to gate3
+\draw (y) -- (gate4);
+
+% From Gate Layer 1 to Junction Layer 2
+\draw (gate1) -- (mid1);
+\draw (gate2) -- (mid1);
+\draw (gate3) -- (mid2);
+\draw (gate4) -- (mid2);
+
+% Connections between Junction Layer 2 nodes
+\draw (mid1) -- (gate5);
+\draw (mid1) -- (gate6);
+\draw (mid2) -- (gate5); % Connecting mid2 to gate5
+
+% Connections from Junction Layer 2 to Output Layer 3 (and possibly other nodes)
+\draw (mid1) -- (gate5);
+\draw (mid2) -- (gate6);
+\draw (mid2) -- (gate4); % Looks like mid2 connects to gate4 in the original image
+
+% From Gate Layer 3 to Output
+\draw (gate5) -- (xy);
+\draw (gate6) -- (xy);
+
+% Add the "multiplication" label
+\node[anchor=west] at (-2.5, 8) {\textbf{(a) multiplication}};
+
+\end{tikzpicture}
 \end{document}
